@@ -4,7 +4,6 @@ import Link from "next/link";
 
 import { useQuery } from "@tanstack/react-query";
 
-import { ModeToggle } from "@/components/mode-toggle";
 import { Button } from "@/components/ui/button";
 import { Spinner } from "@/components/ui/spinner";
 import { eden } from "@/config/eden";
@@ -27,7 +26,6 @@ export default function HomePage() {
       <Button asChild>
         <Link href="/auth">Login</Link>
       </Button>
-      <ModeToggle />
     </section>
   );
 }
