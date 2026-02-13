@@ -202,7 +202,7 @@ const SuccessState = ({ id, onClose }: { id: string; onClose: () => void }) => {
           Done
         </Button>
         <Button asChild>
-          <a href={`/dashboard/websites/${id}/setup`}>
+          <a href={`/websites/${id}/setup`}>
             <ExternalLinkIcon className="size-4" />
             View Setup Guide
           </a>

@@ -9,7 +9,7 @@ import { AddWebsiteDialog } from "@/features/websites/components/add-website-dia
 import { WebsiteCard } from "@/features/websites/components/website-card";
 import { useWebsites } from "@/features/websites/hooks/use-websites";
 
-export const DashboardView = () => {
+export const WebsitesView = () => {
   const { data: websites, isLoading, isError } = useWebsites();
 
   return (

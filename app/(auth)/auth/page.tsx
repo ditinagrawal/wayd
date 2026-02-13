@@ -9,7 +9,7 @@ export default async function AuthPage() {
     headers: await headers(),
   });
   if (session) {
-    redirect("/dashboard");
+    redirect("/websites");
   }
   return <AuthView />;
 }
