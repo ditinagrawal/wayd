@@ -4,8 +4,7 @@ import { useState } from "react";
 
 import {
   CheckCircle2Icon,
-  CopyIcon,
-  ExternalLinkIcon,
+  ClipboardCopyIcon,
   GlobeIcon,
 } from "lucide-react";
 import { toast } from "sonner";
@@ -75,7 +74,7 @@ export const AddWebsiteDialog = ({ children }: AddWebsiteDialogProps) => {
       onOpenChange={(v) => (v ? setOpen(true) : handleClose())}
     >
       <DialogTrigger asChild>{children}</DialogTrigger>
-      <DialogContent>
+      <DialogContent className={createdId ? "sm:max-w-xl" : ""}>
         {createdId ? (
           <SuccessState id={createdId} onClose={handleClose} />
         ) : (
@@ -149,16 +148,18 @@ const SuccessState = ({ id, onClose }: { id: string; onClose: () => void }) => {
   return (
     <>
       <DialogHeader>
-        <div className="flex items-center gap-2">
-          <div className="bg-primary/10 flex size-8 items-center justify-center rounded-full">
+        <div className="flex items-center gap-3">
+          <div className="bg-primary/10 flex size-9 shrink-0 items-center justify-center rounded-full">
             <CheckCircle2Icon className="text-primary size-5" />
           </div>
-          <DialogTitle>Website added</DialogTitle>
+          <div className="grid gap-1">
+            <DialogTitle>Website added</DialogTitle>
+            <DialogDescription>
+              Your website has been added. Install the tracking script to start
+              collecting analytics.
+            </DialogDescription>
+          </div>
         </div>
-        <DialogDescription>
-          Your website has been added. Install the tracking script to start
-          collecting analytics.
-        </DialogDescription>
       </DialogHeader>
 
       {isLoading ? (
@@ -168,46 +169,34 @@ const SuccessState = ({ id, onClose }: { id: string; onClose: () => void }) => {
       ) : scriptData &&
         typeof scriptData === "object" &&
         "script" in scriptData ? (
-        <div className="grid gap-3">
-          <Label>Installation Script</Label>
-          <div className="bg-muted relative rounded-lg border p-3">
-            <pre className="text-muted-foreground overflow-x-auto text-xs leading-relaxed">
-              <code>{scriptData.script as string}</code>
+        <div className="grid gap-2">
+          <Label className="text-xs font-medium">Installation Script</Label>
+          <div className="bg-muted overflow-hidden rounded-lg border">
+            <pre className="overflow-x-auto p-3 text-xs leading-relaxed whitespace-pre-wrap break-all">
+              <code className="text-foreground/70">{scriptData.script as string}</code>
             </pre>
-            <Button
-              variant="ghost"
-              size="icon-sm"
-              className="absolute top-2 right-2"
-              onClick={handleCopy}
-            >
-              {copied ? (
-                <CheckCircle2Icon className="size-3.5" />
-              ) : (
-                <CopyIcon className="size-3.5" />
-              )}
-            </Button>
           </div>
-          <p className="text-muted-foreground text-xs">
-            Paste this snippet in the{" "}
-            <code className="bg-muted rounded px-1 py-0.5 font-mono text-xs">
-              &lt;head&gt;
-            </code>{" "}
-            of your website.
-          </p>
+          <Button
+            variant="outline"
+            size="sm"
+            className="w-full"
+            onClick={handleCopy}
+          >
+            {copied ? (
+              <>
+                <CheckCircle2Icon className="size-4" />
+                Copied!
+              </>
+            ) : (
+              <>
+                <ClipboardCopyIcon className="size-4" />
+                Copy Script
+              </>
+            )}
+          </Button>
         </div>
       ) : null}
 
-      <DialogFooter className="gap-2 sm:gap-0">
-        <Button variant="outline" onClick={onClose}>
-          Done
-        </Button>
-        <Button asChild>
-          <a href={`/websites/${id}/setup`}>
-            <ExternalLinkIcon className="size-4" />
-            View Setup Guide
-          </a>
-        </Button>
-      </DialogFooter>
     </>
   );
 };

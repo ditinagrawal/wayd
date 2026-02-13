@@ -88,8 +88,7 @@ export const websites = new Elysia({ prefix: "/websites" })
 
       const appUrl = process.env.NEXT_PUBLIC_APP_URL || "http://localhost:3000";
 
-      const script = `<!-- Wayd Analytics -->
-<script defer src="${appUrl}/tracker.js" data-site-id="${website.siteId}"></script>`;
+      const script = `<script defer src="${appUrl}/tracker.js" data-site-id="${website.siteId}"></script>`;
 
       return {
         script,
