@@ -1,7 +1,7 @@
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 
-import { LayoutDashboardIcon, LucideIcon, SettingsIcon } from "lucide-react";
+import { GlobeIcon, LucideIcon, SettingsIcon } from "lucide-react";
 
 import {
   SidebarMenu,
@@ -20,10 +20,10 @@ interface AppMenuItem {
 
 const ITEMS: AppMenuItem[] = [
   {
-    id: "dashboard",
-    title: "Dashboard",
-    icon: LayoutDashboardIcon,
-    link: "/dashboard",
+    id: "websites",
+    title: "Websites",
+    icon: GlobeIcon,
+    link: "/websites",
   },
   {
     id: "settings",

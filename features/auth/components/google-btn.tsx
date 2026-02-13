@@ -13,7 +13,7 @@ export const GoogleBtn = () => {
     startTransition(async () => {
       await authClient.signIn.social({
         provider: "google",
-        callbackURL: "/dashboard",
+        callbackURL: "/websites",
       });
     });
   }

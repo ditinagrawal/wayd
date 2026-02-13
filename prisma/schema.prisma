@@ -17,6 +17,7 @@ model User {
   updatedAt     DateTime  @updatedAt
   sessions      Session[]
   accounts      Account[]
+  websites      Website[]
 
   @@unique([email])
   @@map("user")
@@ -68,4 +69,18 @@ model Verification {
 
   @@index([identifier])
   @@map("verification")
+}
+
+model Website {
+  id String @id
+  domain String
+  siteId String
+  
+  createdAt DateTime @default(now())
+
+  userId String
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@unique([domain, siteId])
+  @@map("website")
 }
