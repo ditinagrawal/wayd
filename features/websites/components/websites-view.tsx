@@ -1,7 +1,7 @@
 "use client";
 
 import { GlobeIcon, PlusIcon } from "lucide-react";
-import { motion } from "motion/react";
+import { AnimatePresence, motion } from "motion/react";
 
 import { Button } from "@/components/ui/button";
 import { Skeleton } from "@/components/ui/skeleton";
@@ -50,38 +50,33 @@ export const WebsitesView = () => {
           </Button>
         </div>
       ) : websites && websites.length > 0 ? (
-        <motion.div
-          className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3"
-          initial="hidden"
-          animate="visible"
-          variants={{
-            hidden: {},
-            visible: {
-              transition: { staggerChildren: 0.06 },
-            },
-          }}
-        >
-          {websites.map((website) => (
-            <motion.div
-              key={website.id}
-              variants={{
-                hidden: { opacity: 0, y: 12 },
-                visible: { opacity: 1, y: 0 },
-              }}
-              transition={{ duration: 0.35, ease: "easeOut" }}
-            >
-              <WebsiteCard
-                website={{
-                  ...website,
-                  createdAt:
-                    typeof website.createdAt === "string"
-                      ? website.createdAt
-                      : new Date(website.createdAt).toISOString(),
+        <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
+          <AnimatePresence>
+            {websites.map((website, index) => (
+              <motion.div
+                key={website.id}
+                initial={{ opacity: 0, y: 12 }}
+                animate={{ opacity: 1, y: 0 }}
+                exit={{ opacity: 0, y: -12 }}
+                transition={{
+                  duration: 0.35,
+                  ease: "easeOut",
+                  delay: index * 0.06,
                 }}
-              />
-            </motion.div>
-          ))}
-        </motion.div>
+              >
+                <WebsiteCard
+                  website={{
+                    ...website,
+                    createdAt:
+                      typeof website.createdAt === "string"
+                        ? website.createdAt
+                        : new Date(website.createdAt).toISOString(),
+                  }}
+                />
+              </motion.div>
+            ))}
+          </AnimatePresence>
+        </div>
       ) : (
         <EmptyState />
       )}
