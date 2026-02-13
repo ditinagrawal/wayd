@@ -1,6 +1,7 @@
 import { headers } from "next/headers";
 import { redirect } from "next/navigation";
 
+import { DashboardView } from "@/features/websites/components/dashboard-view";
 import { auth } from "@/lib/auth";
 
 export default async function DashboardPage() {
@@ -10,9 +11,5 @@ export default async function DashboardPage() {
   if (!session) {
     redirect("/auth");
   }
-  return (
-    <section className="flex h-full flex-col items-center justify-center">
-      <h1 className="text-4xl font-bold">Dashboard</h1>
-    </section>
-  );
+  return <DashboardView />;
 }
