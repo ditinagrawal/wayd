@@ -98,7 +98,8 @@
     // Use sendBeacon if available for reliability, else fetch
     var payload = JSON.stringify(data);
     if (navigator.sendBeacon) {
-      navigator.sendBeacon(apiUrl, payload);
+      var blob = new Blob([payload], { type: "application/json" });
+      navigator.sendBeacon(apiUrl, blob);
     } else {
       fetch(apiUrl, {
         method: "POST",
@@ -125,7 +126,8 @@
 
     var payload = JSON.stringify(data);
     if (navigator.sendBeacon) {
-      navigator.sendBeacon(apiUrl, payload);
+      var blob = new Blob([payload], { type: "application/json" });
+      navigator.sendBeacon(apiUrl, blob);
     } else {
       fetch(apiUrl, {
         method: "POST",
