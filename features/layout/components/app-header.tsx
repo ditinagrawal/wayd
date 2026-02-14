@@ -1,5 +1,7 @@
 "use client";
 
+import React from "react";
+
 import { usePathname } from "next/navigation";
 
 import {
@@ -29,18 +31,20 @@ export const AppHeader = () => {
             const label = segment.charAt(0).toUpperCase() + segment.slice(1);
 
             return (
-              <BreadcrumbItem key={href}>
+              <React.Fragment key={href}>
                 <BreadcrumbSeparator />
-                {isLast ? (
-                  <BreadcrumbPage className="max-w-[200px] truncate capitalize">
-                    {label}
-                  </BreadcrumbPage>
-                ) : (
-                  <BreadcrumbLink href={href} className="capitalize">
-                    {label}
-                  </BreadcrumbLink>
-                )}
-              </BreadcrumbItem>
+                <BreadcrumbItem>
+                  {isLast ? (
+                    <BreadcrumbPage className="max-w-[200px] truncate capitalize">
+                      {label}
+                    </BreadcrumbPage>
+                  ) : (
+                    <BreadcrumbLink href={href} className="capitalize">
+                      {label}
+                    </BreadcrumbLink>
+                  )}
+                </BreadcrumbItem>
+              </React.Fragment>
             );
           })}
         </BreadcrumbList>

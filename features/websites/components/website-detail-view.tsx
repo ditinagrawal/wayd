@@ -15,6 +15,7 @@ import {
   GlobeIcon,
   HashIcon,
 } from "lucide-react";
+import { AnimatePresence, motion } from "motion/react";
 import { toast } from "sonner";
 
 import { Badge } from "@/components/ui/badge";
@@ -217,13 +218,15 @@ export const WebsiteDetailView = ({ id }: WebsiteDetailViewProps) => {
 const ScriptSection = ({ id }: { id: string }) => {
   const { data: scriptData, isLoading } = useWebsiteScript(id);
   const [copied, setCopied] = useState(false);
+  const [expanded, setExpanded] = useState(false);
 
   const script =
     scriptData && typeof scriptData === "object" && "script" in scriptData
       ? (scriptData.script as string)
       : null;
 
-  const handleCopy = async () => {
+  const handleCopy = async (e: React.MouseEvent) => {
+    e.stopPropagation();
     if (!script) return;
     await navigator.clipboard.writeText(script);
     setCopied(true);
@@ -232,50 +235,80 @@ const ScriptSection = ({ id }: { id: string }) => {
   };
 
   return (
-    <div className="px-6 py-4">
-      <div className="flex items-center justify-between">
+    <div>
+      <button
+        onClick={() => setExpanded((v) => !v)}
+        className="hover:bg-muted/50 flex w-full items-center justify-between px-6 py-3 text-left transition-colors"
+      >
         <div className="flex items-center gap-2">
           <CodeIcon className="text-muted-foreground size-4" />
           <span className="text-sm font-medium">Tracking Script</span>
+          <Badge variant="outline" className="text-[10px]">
+            Install
+          </Badge>
         </div>
-        <Button
-          variant="outline"
-          size="sm"
-          onClick={handleCopy}
-          disabled={isLoading || !script}
-          className="h-7 gap-1.5 text-xs"
+        <motion.div
+          animate={{ rotate: expanded ? 180 : 0 }}
+          transition={{ duration: 0.2 }}
         >
-          {copied ? (
-            <>
-              <CheckCircle2Icon className="size-3" />
-              Copied
-            </>
-          ) : (
-            <>
-              <ClipboardCopyIcon className="size-3" />
-              Copy
-            </>
-          )}
-        </Button>
-      </div>
-      <div className="bg-muted mt-3 overflow-hidden rounded-lg border">
-        {isLoading ? (
-          <div className="p-3">
-            <Skeleton className="h-4 w-full" />
-          </div>
-        ) : script ? (
-          <pre className="overflow-x-auto p-3 text-xs leading-relaxed break-all whitespace-pre-wrap">
-            <code className="text-foreground/70">{script}</code>
-          </pre>
-        ) : (
-          <div className="text-muted-foreground p-3 text-xs">
-            Script unavailable
-          </div>
+          <ChevronDownIcon className="text-muted-foreground size-4" />
+        </motion.div>
+      </button>
+
+      <AnimatePresence initial={false}>
+        {expanded && (
+          <motion.div
+            initial={{ height: 0, opacity: 0 }}
+            animate={{ height: "auto", opacity: 1 }}
+            exit={{ height: 0, opacity: 0 }}
+            transition={{ duration: 0.2, ease: "easeInOut" }}
+            className="overflow-hidden"
+          >
+            <div className="px-6 pb-4">
+              <div className="bg-muted overflow-hidden rounded-lg border">
+                {isLoading ? (
+                  <div className="p-3">
+                    <Skeleton className="h-4 w-full" />
+                  </div>
+                ) : script ? (
+                  <pre className="overflow-x-auto p-3 text-xs leading-relaxed break-all whitespace-pre-wrap">
+                    <code className="text-foreground/70">{script}</code>
+                  </pre>
+                ) : (
+                  <div className="text-muted-foreground p-3 text-xs">
+                    Script unavailable
+                  </div>
+                )}
+              </div>
+              <div className="mt-2 flex items-center justify-between">
+                <p className="text-muted-foreground text-xs">
+                  Add this script to the {"<head>"} of your website to start
+                  tracking.
+                </p>
+                <Button
+                  variant="outline"
+                  size="sm"
+                  onClick={handleCopy}
+                  disabled={isLoading || !script}
+                  className="h-7 shrink-0 gap-1.5 text-xs"
+                >
+                  {copied ? (
+                    <>
+                      <CheckCircle2Icon className="size-3" />
+                      Copied
+                    </>
+                  ) : (
+                    <>
+                      <ClipboardCopyIcon className="size-3" />
+                      Copy
+                    </>
+                  )}
+                </Button>
+              </div>
+            </div>
+          </motion.div>
         )}
-      </div>
-      <p className="text-muted-foreground mt-2 text-xs">
-        Add this script to the {"<head>"} of your website to start tracking.
-      </p>
+      </AnimatePresence>
     </div>
   );
 };
