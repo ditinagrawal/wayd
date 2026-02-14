@@ -11,9 +11,9 @@ export default function DashboardLayout({ children }: DashboardLayoutProps) {
     <SidebarProvider>
       <div className="relative flex h-dvh w-full">
         <AppSidebar />
-        <SidebarInset className="flex flex-col">
+        <SidebarInset className="flex min-h-0 flex-col">
           <AppHeader />
-          <main className="flex-1 p-4">{children}</main>
+          <div className="min-h-0 flex-1 overflow-auto p-4">{children}</div>
         </SidebarInset>
       </div>
     </SidebarProvider>
