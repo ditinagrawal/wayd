@@ -1,3 +1,4 @@
+import { cors } from "@elysiajs/cors";
 import { Elysia, t } from "elysia";
 
 import { db } from "@/config/db";
@@ -60,7 +61,9 @@ async function getGeoFromIP(
   }
 }
 
-export const collect = new Elysia({ prefix: "/collect" }).post(
+export const collect = new Elysia({ prefix: "/collect" })
+  .use(cors({ origin: true, methods: ["POST", "OPTIONS"] }))
+  .post(
   "/",
   async ({ body, request }) => {
     const {
