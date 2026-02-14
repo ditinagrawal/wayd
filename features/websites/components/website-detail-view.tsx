@@ -28,8 +28,22 @@ import {
   DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
 import { Separator } from "@/components/ui/separator";
 import { Skeleton } from "@/components/ui/skeleton";
+import { AnalyticsChart } from "@/features/analytics/components/analytics-chart";
+import { DevicesView } from "@/features/analytics/components/devices-view";
+import { LiveVisitors } from "@/features/analytics/components/live-visitors";
+import { LocationsView } from "@/features/analytics/components/locations-view";
+import { SourcesView } from "@/features/analytics/components/sources-view";
+import { TopPages } from "@/features/analytics/components/top-pages";
+import { useLiveVisitors } from "@/features/analytics/hooks/use-analytics";
 import {
   useWebsite,
   useWebsiteScript,
@@ -42,8 +56,10 @@ interface WebsiteDetailViewProps {
 
 export const WebsiteDetailView = ({ id }: WebsiteDetailViewProps) => {
   const router = useRouter();
+  const [period, setPeriod] = useState("7d");
   const { data: website, isLoading, isError } = useWebsite(id);
   const { data: websites } = useWebsites();
+  const { data: liveData } = useLiveVisitors(id);
 
   if (isLoading) {
     return <DetailSkeleton />;
@@ -82,12 +98,13 @@ export const WebsiteDetailView = ({ id }: WebsiteDetailViewProps) => {
   };
 
   const otherWebsites = websites?.filter((w) => w.id !== site.id) ?? [];
+  const liveCount = liveData?.count ?? 0;
 
   return (
-    <div className="mx-auto w-full max-w-6xl space-y-8 p-2">
+    <div className="mx-auto w-full max-w-6xl space-y-6 p-2">
       {/* Top Section */}
       <div className="ring-foreground/10 bg-card overflow-hidden rounded-2xl ring-1">
-        {/* Header row: Website switcher + Visit link */}
+        {/* Header row: Website switcher + Period selector + Visit link */}
         <div className="flex items-center justify-between px-6 pt-5 pb-4">
           <div className="flex items-center gap-3">
             <div className="bg-primary/10 flex size-10 shrink-0 items-center justify-center rounded-xl">
@@ -132,15 +149,28 @@ export const WebsiteDetailView = ({ id }: WebsiteDetailViewProps) => {
             </div>
           </div>
 
-          <a
-            href={`https://${site.domain}`}
-            target="_blank"
-            rel="noopener noreferrer"
-            className="text-muted-foreground hover:text-foreground inline-flex items-center gap-1.5 text-sm transition-colors"
-          >
-            Visit site
-            <ExternalLinkIcon className="size-3.5" />
-          </a>
+          <div className="flex items-center gap-3">
+            <Select value={period} onValueChange={setPeriod}>
+              <SelectTrigger size="sm" className="h-8 w-auto gap-1.5 text-xs">
+                <SelectValue />
+              </SelectTrigger>
+              <SelectContent>
+                <SelectItem value="24h">Last 24 hours</SelectItem>
+                <SelectItem value="7d">Last 7 days</SelectItem>
+                <SelectItem value="30d">Last 30 days</SelectItem>
+                <SelectItem value="90d">Last 90 days</SelectItem>
+              </SelectContent>
+            </Select>
+            <a
+              href={`https://${site.domain}`}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="text-muted-foreground hover:text-foreground inline-flex items-center gap-1.5 text-sm transition-colors"
+            >
+              Visit site
+              <ExternalLinkIcon className="size-3.5" />
+            </a>
+          </div>
         </div>
 
         <Separator />
@@ -171,7 +201,7 @@ export const WebsiteDetailView = ({ id }: WebsiteDetailViewProps) => {
                 <span className="absolute inline-flex size-full animate-ping rounded-full bg-emerald-400 opacity-75" />
                 <span className="relative inline-flex size-2 rounded-full bg-emerald-500" />
               </span>
-              <span className="text-sm font-semibold">0 online</span>
+              <span className="text-sm font-semibold">{liveCount} online</span>
             </div>
           </div>
 
@@ -210,7 +240,25 @@ export const WebsiteDetailView = ({ id }: WebsiteDetailViewProps) => {
         <ScriptSection id={site.id} />
       </div>
 
-      {/* Bottom Section (placeholder for charts and insights) */}
+      {/* Analytics Chart */}
+      <AnalyticsChart websiteId={site.id} period={period} />
+
+      {/* Two-column layout: Pages + Live Visitors */}
+      <div className="grid gap-6 lg:grid-cols-2">
+        <TopPages websiteId={site.id} period={period} />
+        <LiveVisitors websiteId={site.id} />
+      </div>
+
+      {/* Two-column layout: Locations + Sources */}
+      <div className="grid gap-6 lg:grid-cols-2">
+        <LocationsView websiteId={site.id} period={period} />
+        <SourcesView websiteId={site.id} period={period} />
+      </div>
+
+      {/* Devices */}
+      <div className="grid gap-6 lg:grid-cols-1">
+        <DevicesView websiteId={site.id} period={period} />
+      </div>
     </div>
   );
 };
@@ -315,7 +363,7 @@ const ScriptSection = ({ id }: { id: string }) => {
 
 const DetailSkeleton = () => {
   return (
-    <div className="mx-auto w-full max-w-6xl space-y-8 p-2">
+    <div className="mx-auto w-full max-w-6xl space-y-6 p-2">
       <div className="ring-foreground/10 bg-card overflow-hidden rounded-2xl ring-1">
         <div className="flex items-center justify-between px-6 pt-5 pb-4">
           <div className="flex items-center gap-3">
@@ -342,6 +390,40 @@ const DetailSkeleton = () => {
           <Skeleton className="mt-3 h-10 w-full rounded-lg" />
           <Skeleton className="mt-2 h-3 w-60" />
         </div>
+      </div>
+
+      {/* Chart skeleton */}
+      <div className="ring-foreground/10 bg-card overflow-hidden rounded-2xl ring-1">
+        <div className="bg-border/50 grid grid-cols-2 gap-px sm:grid-cols-5">
+          {Array.from({ length: 5 }).map((_, i) => (
+            <div key={i} className="bg-card flex flex-col gap-2 px-6 py-4">
+              <Skeleton className="h-3 w-20" />
+              <Skeleton className="h-6 w-16" />
+            </div>
+          ))}
+        </div>
+        <div className="p-6">
+          <Skeleton className="h-[280px] w-full rounded-xl" />
+        </div>
+      </div>
+
+      {/* Bottom skeletons */}
+      <div className="grid gap-6 lg:grid-cols-2">
+        {Array.from({ length: 2 }).map((_, i) => (
+          <div
+            key={i}
+            className="ring-foreground/10 bg-card overflow-hidden rounded-2xl ring-1"
+          >
+            <div className="p-6">
+              <Skeleton className="mb-4 h-5 w-32" />
+              <div className="space-y-3">
+                {Array.from({ length: 4 }).map((_, j) => (
+                  <Skeleton key={j} className="h-8 w-full" />
+                ))}
+              </div>
+            </div>
+          </div>
+        ))}
       </div>
     </div>
   );

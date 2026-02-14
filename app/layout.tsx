@@ -28,6 +28,13 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="en">
+      <head>
+        <script
+          defer
+          src="https://wayd.ditin.in/tracker.js"
+          data-site-id="41282522"
+        ></script>
+      </head>
       <body className={`${rubik.className} antialiased`}>
         <NextTopLoader color="#611c69" showSpinner={false} />
         <Toaster />

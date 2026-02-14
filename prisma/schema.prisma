@@ -81,6 +81,52 @@ model Website {
   userId String
   user User @relation(fields: [userId], references: [id], onDelete: Cascade)
 
+  pageViews PageView[]
+
   @@unique([domain, siteId])
   @@map("website")
+}
+
+model PageView {
+  id        String   @id @default(uuid())
+  
+  // Page info
+  pathname  String
+  referrer  String?
+  
+  // Visitor info
+  visitorId String   // anonymous fingerprint hash
+  sessionId String   // session identifier
+  
+  // Device info (parsed from user-agent)
+  browser   String?
+  os        String?
+  device    String?  // desktop, mobile, tablet
+  
+  // Location info (from IP geolocation)
+  country   String?
+  city      String?
+  region    String?
+  
+  // Traffic source
+  source    String?  // utm_source or referrer domain
+  medium    String?  // utm_medium
+  campaign  String?  // utm_campaign
+  
+  // Timing
+  duration  Int      @default(0) // seconds spent on page
+  
+  createdAt DateTime @default(now())
+  
+  // Relations
+  websiteId String
+  website   Website  @relation(fields: [websiteId], references: [id], onDelete: Cascade)
+  
+  @@index([websiteId, createdAt])
+  @@index([websiteId, visitorId])
+  @@index([websiteId, sessionId])
+  @@index([websiteId, pathname])
+  @@index([websiteId, country])
+  @@index([visitorId])
+  @@map("page_view")
 }

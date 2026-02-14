@@ -1,5 +1,7 @@
 import { Elysia } from "elysia";
 
+import { collect } from "@/features/analytics/api/collect";
+import { analytics } from "@/features/analytics/api/routes";
 import { websites } from "@/features/websites/api/routes";
 import { auth } from "@/lib/auth";
 
@@ -30,7 +32,9 @@ const message = new Elysia({ prefix: "/message" }).get(
 const app = new Elysia({ prefix: "/api" })
   .use(betterAuth)
   .use(message)
-  .use(websites);
+  .use(websites)
+  .use(collect)
+  .use(analytics);
 
 export const GET = app.fetch;
 export const POST = app.fetch;
