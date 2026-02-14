@@ -2,11 +2,7 @@
 
 import { useState } from "react";
 
-import {
-  CheckCircle2Icon,
-  ClipboardCopyIcon,
-  GlobeIcon,
-} from "lucide-react";
+import { CheckCircle2Icon, ClipboardCopyIcon, GlobeIcon } from "lucide-react";
 import { toast } from "sonner";
 
 import { Button } from "@/components/ui/button";
@@ -172,8 +168,10 @@ const SuccessState = ({ id, onClose }: { id: string; onClose: () => void }) => {
         <div className="grid gap-2">
           <Label className="text-xs font-medium">Installation Script</Label>
           <div className="bg-muted overflow-hidden rounded-lg border">
-            <pre className="overflow-x-auto p-3 text-xs leading-relaxed whitespace-pre-wrap break-all">
-              <code className="text-foreground/70">{scriptData.script as string}</code>
+            <pre className="overflow-x-auto p-3 text-xs leading-relaxed break-all whitespace-pre-wrap">
+              <code className="text-foreground/70">
+                {scriptData.script as string}
+              </code>
             </pre>
           </div>
           <Button
@@ -196,7 +194,6 @@ const SuccessState = ({ id, onClose }: { id: string; onClose: () => void }) => {
           </Button>
         </div>
       ) : null}
-
     </>
   );
 };
